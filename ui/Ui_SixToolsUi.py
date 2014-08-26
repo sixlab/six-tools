@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'E:\project\git\SixTools\ui\SixToolsUi.ui'
 #
-# Created: Mon Aug 25 22:37:51 2014
+# Created: Tue Aug 26 22:17:18 2014
 #      by: PyQt4 UI code generator 4.11.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -42,9 +42,6 @@ class Ui_MainWindow(object):
         self.tab = QtGui.QWidget()
         self.tab.setObjectName(_fromUtf8("tab"))
         self.tabWidget.addTab(self.tab, _fromUtf8(""))
-        self.tab_2 = QtGui.QWidget()
-        self.tab_2.setObjectName(_fromUtf8("tab_2"))
-        self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 600, 23))
@@ -80,12 +77,15 @@ class Ui_MainWindow(object):
         self.edit_tab_action.setObjectName(_fromUtf8("edit_tab_action"))
         self.edit_soft_action = QtGui.QAction(MainWindow)
         self.edit_soft_action.setObjectName(_fromUtf8("edit_soft_action"))
+        self.scan_action = QtGui.QAction(MainWindow)
+        self.scan_action.setObjectName(_fromUtf8("scan_action"))
         self.menu_F.addAction(self.add_tab_action)
         self.menu_F.addAction(self.add_soft_action)
         self.menu_E.addAction(self.del_tab_action)
         self.menu_E.addAction(self.del_soft_action)
         self.menu_E.addAction(self.edit_tab_action)
         self.menu_E.addAction(self.edit_soft_action)
+        self.menu_T.addAction(self.scan_action)
         self.menu_H.addAction(self.help_action)
         self.menu_H.addAction(self.about_action)
         self.menuBar.addAction(self.menu_F.menuAction())
@@ -100,6 +100,8 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.edit_soft_action)
         self.toolBar.addAction(self.del_soft_action)
         self.toolBar.addSeparator()
+        self.toolBar.addAction(self.scan_action)
+        self.toolBar.addSeparator()
         self.toolBar.addAction(self.help_action)
 
         self.retranslateUi(MainWindow)
@@ -108,8 +110,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "soft", None))
         self.menu_F.setTitle(_translate("MainWindow", "文件(&F)", None))
         self.menu_E.setTitle(_translate("MainWindow", "编辑(&E)", None))
         self.menu_T.setTitle(_translate("MainWindow", "工具(&T)", None))
@@ -123,6 +124,7 @@ class Ui_MainWindow(object):
         self.del_soft_action.setText(_translate("MainWindow", "删除程序", None))
         self.edit_tab_action.setText(_translate("MainWindow", "修改Tab", None))
         self.edit_soft_action.setText(_translate("MainWindow", "修改程序", None))
+        self.scan_action.setText(_translate("MainWindow", "扫描", None))
 
 
 if __name__ == "__main__":
