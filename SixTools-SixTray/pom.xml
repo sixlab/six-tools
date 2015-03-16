@@ -12,6 +12,7 @@
     <artifactId>SixTools-SixTray</artifactId>
 
     <dependencies>
+
         <dependency>
             <groupId>org.eu.sixlab</groupId>
             <artifactId>SixTools-Common</artifactId>
