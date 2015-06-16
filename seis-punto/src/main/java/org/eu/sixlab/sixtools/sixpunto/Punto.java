@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.eu.sixlab.sixtools.comun.util.A;
+import org.eu.sixlab.sixtools.comun.util.T;
 import org.eu.sixlab.sixtools.comun.util.ToolLaunch;
 
 import java.io.IOException;

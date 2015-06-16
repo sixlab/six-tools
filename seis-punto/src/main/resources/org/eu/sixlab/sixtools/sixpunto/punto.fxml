@@ -62,8 +62,7 @@
                                 <TextField fx:id="puntoField" prefHeight="23.0" prefWidth="52.0"/>
                                 <Label text="原因"/>
                                 <TextField fx:id="reasonField"/>
-                                <Button mnemonicParsing="false" onAction="#addPunto" text="加分"/>
-                                <Button mnemonicParsing="false" onAction="#minPunto" text="减分"/>
+                                <Button mnemonicParsing="false" onAction="#addPunto" text="计分"/>
                                 <Label fx:id="totalPunto"/>
                             </items>
                         </ToolBar>
