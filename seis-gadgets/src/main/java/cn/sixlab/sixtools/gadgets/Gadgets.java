@@ -23,6 +23,7 @@ import java.io.IOException;
  * @date 2015/6/17 22:40
  */
 public class Gadgets extends Application implements ToolLoader {
+    public static Stage stage;
 
     public static void main(String[] args) {
         launch(args);
@@ -30,6 +31,7 @@ public class Gadgets extends Application implements ToolLoader {
 
     private void show(){
         Stage stage = new Stage();
+        this.stage = stage;
         Platform.setImplicitExit(false);
         Parent parent = null;
         try {

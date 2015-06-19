@@ -5,14 +5,12 @@
  */
 package cn.sixlab.sixtools.seis;
 
-import javafx.application.Platform;
-import javafx.stage.Stage;
 import cn.sixlab.sixtools.comun.bean.SeisBandeja;
-import cn.sixlab.sixtools.comun.bean.SeisTools;
-import cn.sixlab.sixtools.comun.dao.ToolsDao;
 import cn.sixlab.sixtools.comun.dao.TrayDao;
 import cn.sixlab.sixtools.comun.util.A;
 import cn.sixlab.sixtools.comun.util.C;
+import cn.sixlab.sixtools.gadgets.Gadgets;
+import javafx.application.Platform;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -26,6 +24,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.IsoFields;
 import java.util.List;
 
@@ -36,28 +35,24 @@ import java.util.List;
  * @date 2015/4/14 13:37
  */
 public class SeisTrayService {
+    public static SeisTrayService self;
 
-    private TrayDao dao = new TrayDao();
-    private ToolsDao toolsDao = new ToolsDao();
-    public PopupMenu popupMenu = new PopupMenu();
-
-    private void addToolsListener(SeisTools aTool, MenuItem trayItem) {
-        trayItem.addActionListener(e -> {
-            Launcher.launchTool(aTool.getId());
-        });
+    public SeisTrayService(){
+        self = this;
     }
 
-    public void initTray(Stage primaryStage) {
-        TrayIcon trayIcon = null;
+    private TrayDao dao = new TrayDao();
+    public PopupMenu popupMenu = new PopupMenu();
 
+    public void initTray() {
         if (SystemTray.isSupported()){
             SystemTray systemTray = SystemTray.getSystemTray();
             Image image = Toolkit.getDefaultToolkit().getImage("logo.png");
 
             loadMenu(popupMenu, C.ROOT_PARENT_ID);
 
-            trayIcon = new TrayIcon(image, getTooltips(), popupMenu);
-            trayIcon.addMouseListener(trayAction(primaryStage));
+            TrayIcon trayIcon = new TrayIcon(image, getTooltips(), popupMenu);
+            trayIcon.addMouseListener(trayAction());
             try {
                 systemTray.add(trayIcon);
             } catch (AWTException e) {
@@ -66,21 +61,36 @@ public class SeisTrayService {
         }
     }
 
-    public MouseListener trayAction(Stage primaryStage) {
+    public MouseListener trayAction() {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if(e.getModifiers() == MouseEvent.BUTTON1_MASK){
+                if (e.getModifiers() == MouseEvent.BUTTON1_MASK) {
                     Platform.setImplicitExit(false);
-                    if(primaryStage.isShowing()){
-                        Platform.runLater(() -> {
-                            primaryStage.hide();
-                        });
-                    }else{
-                        Platform.runLater(()->{
-                            primaryStage.show();
-                        });
+                    synchronized (this) {
+                        if (null == Gadgets.stage) {
+                            LocalTime beginTime = LocalTime.now();
+                            Platform.runLater(() -> {
+                                new Gadgets().load();
+                            });
+                            while (null == Gadgets.stage) {
+                                LocalTime nowTime = LocalTime.now();
+                                if(nowTime.compareTo(beginTime.plusMinutes(1))<0){
+                                    break;
+                                }
+                            }
+                        } else {
+                            if (Gadgets.stage.isShowing()) {
+                                Platform.runLater(() -> {
+                                    Gadgets.stage.hide();
+                                });
+                            } else {
+                                Platform.runLater(() -> {
+                                    Gadgets.stage.show();
+                                });
+                            }
+                        }
                     }
                 }
             }
@@ -89,10 +99,6 @@ public class SeisTrayService {
 
     public void loadMenu(PopupMenu popupMenu, Integer parentId) {
         popupMenu.removeAll();
-        loadSixTools(popupMenu);
-
-        MenuItem spaceMenuItem1 = new MenuItem("-");
-        popupMenu.add(spaceMenuItem1);
 
         initMenus(popupMenu, parentId);
 
@@ -141,21 +147,10 @@ public class SeisTrayService {
         popupMenu.add(spaceMenuItem2);
 
         MenuItem menuItem = new MenuItem("退出");
-        menuItem.addActionListener(e->{System.exit(0);});
-        popupMenu.add(menuItem);
-    }
-
-    private void loadSixTools(PopupMenu popupMenu) {
-        Menu menu = new Menu("Six Tools");
-        List<SeisTools> seisToolsList = toolsDao.getEnableTools();
-
-        seisToolsList.stream().forEach(aTool -> {
-            MenuItem trayItem = new MenuItem(aTool.getToolName());
-            addToolsListener(aTool, trayItem);
-            menu.add(trayItem);
+        menuItem.addActionListener(e -> {
+            System.exit(0);
         });
-
-        popupMenu.add(menu);
+        popupMenu.add(menuItem);
     }
 
     public void initMenus(Menu popup, Integer parentId){
