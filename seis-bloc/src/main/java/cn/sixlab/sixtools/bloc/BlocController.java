@@ -8,6 +8,7 @@ package cn.sixlab.sixtools.bloc;
 import cn.sixlab.sixtools.comun.base.BaseController;
 import cn.sixlab.sixtools.comun.bean.db.SeisBloc;
 import cn.sixlab.sixtools.comun.util.D;
+import cn.sixlab.sixtools.comun.util.S;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.Initializable;
@@ -54,20 +55,6 @@ public class BlocController extends BaseController implements Initializable{
     public void initialize(URL location, ResourceBundle resources) {
         self = this;
         loadList();
-        textAreaFocus();
-    }
-
-    private void textAreaFocus() {
-        textArea.hoverProperty().addListener(e -> {
-            if (!textArea.isHover()) {
-                String text = textArea.getText();
-                currBloc.setText(text);
-                Label label = (Label) currPane.getChildren().get(0);
-                label.setText(text);
-                dao.update(currBloc);
-                tipLabel.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("uuuu-yy-MM HH:mm:ss SSS")));
-            }
-        });
     }
 
     @Override
@@ -77,6 +64,15 @@ public class BlocController extends BaseController implements Initializable{
         }finally {
             super.finalize();
         }
+    }
+
+    public void updateBloc() {
+        String text = textArea.getText();
+        currBloc.setText(text);
+        Label label = (Label) currPane.getChildren().get(0);
+        label.setText(trimText(text));
+        dao.update(currBloc);
+        tipLabel.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("uuuu-yy-MM HH:mm:ss SSS")));
     }
 
     private void loadList(){
@@ -99,7 +95,7 @@ public class BlocController extends BaseController implements Initializable{
                 delete(event);
             });
 
-            Label label = new Label(seisBloc.getText());
+            Label label = new Label(trimText(seisBloc.getText()));
             Pane labelPane = new Pane(label);
             labelPane.setId("lel_"+seisBloc.getId());
             labelPane.setOnMouseClicked(event -> {
@@ -123,7 +119,29 @@ public class BlocController extends BaseController implements Initializable{
             pane.setAlignment(labelPane, Pos.CENTER_LEFT);
             vBox.getChildren().add(pane);
         }
+    }
 
+    private String trimText(String str) {
+        String result = "";
+        int length = 20;
+        if(S.isNotEmpty(str)){
+            String[] texts = str.split("\n");
+            String text = texts[0];
+
+            int t = 0;
+            char[] tempChar = text.toCharArray();
+            for (int i = 0; i < tempChar.length && t < length; i++) {
+                if ((int) tempChar[i] >= 0x4E00 && (int) tempChar[i] <= 0x9FA5) {//是否汉字
+                    result += tempChar[i];
+                    t += 2;
+                } else {
+                    result += tempChar[i];
+                    t++;
+                }
+            }
+            return (result + "...");
+        }
+        return result;
     }
 
     public void delete(ActionEvent event) {
@@ -133,13 +151,15 @@ public class BlocController extends BaseController implements Initializable{
         loadList();
     }
 
-    public void inputChange(Event event) {
-        String text = textArea.getText();
-        if(text.length()<23){
-            Label label = (Label) currPane.getChildren().get(0);
-            label.setText(text);
-        }
-    }
+    //public void inputChange(Event event) {
+    //    System.out.println("-----------------------");
+    //    String text = textArea.getText();
+    //    if(text.length()<23){
+    //        System.out.println("+++++                           +++++++++++++++++++");
+    //        Label label = (Label) currPane.getChildren().get(0);
+    //        label.setText(text);
+    //    }
+    //}
 
     public void changeSearch(Event event) {
         String text = textField.getText();
@@ -156,7 +176,7 @@ public class BlocController extends BaseController implements Initializable{
 
     public void clickLabel(Event event) {
         Pane pane = (Pane)event.getSource();
-        Integer id = Integer.valueOf(pane.getId().substring(4));
+        Long id = Long.valueOf(pane.getId().substring(4));
 
         currPane.setStyle("-fx-background-color: #deb;");
         pane.setStyle("-fx-background-color: #de0;");
